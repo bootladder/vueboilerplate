@@ -1,0 +1,5 @@
+{
+  "dockerservicename": "helloservice",
+  "dockercontainername": "hellocontainer",
+  "viteserverport": "13000"
+}
