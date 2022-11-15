@@ -43,7 +43,7 @@ export default {
 
 <template>
 
-    <div class="">
+    <div class="bg-red-100">
         <TitleBar/>
     </div>
 </template>
