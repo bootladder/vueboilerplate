@@ -3,7 +3,7 @@ services:
 
   boilerplate:
     container_name: "boilerplate"
-    image: node
+    image: node:latest
     command: "/app/runincontainer.sh"
     working_dir: /app
     ports:
