@@ -1,9 +1,11 @@
 <script>
+import { app, db } from './firebase.js'
+import { collection, doc, onSnapshot, getDoc, updateDoc, arrayUnion, setDoc } from "firebase/firestore";
 
 import {onMounted,ref, watch} from 'vue/dist/vue.esm-bundler.js';
 
 const TitleBar = {
-    template: '<div class="border border-black text-center font-bold bg-orange-300 rounded-lg"> Boilerplate </div>'
+    template: '<div class="border border-black text-center font-bold bg-orange-300 rounded-lg"> Firestore Interface </div>'
 }
     
 export default {
@@ -45,38 +47,24 @@ export default {
 
 
   async mounted() {
+
+    const docRef = doc(db, "bootladder", "index","temp","tempdoc")
+    const docSnap = await getDoc(docRef);
+
+    if(docSnap.data() == null){ return; }
+    this.env = docSnap.data();
+
   }
 }
 
 </script>
 
 <template>
+{{env}}
 
     <div class="bg-red-100">
         <TitleBar/>
         <v-btn>hello </v-btn >
-  <v-carousel v-model="model">
-    <v-carousel-item
-      v-for="(color, i) in colors"
-      :key="color"
-    >
-      <v-sheet
-        :color="color"
-        height="100%"
-        tile
-      >
-        <v-row
-          class="fill-height"
-          align="center"
-          justify="center"
-        >
-          <div class="text-h2">
-            Slide {{ i + 1 }}
-          </div>
-        </v-row>
-      </v-sheet>
-    </v-carousel-item>
-  </v-carousel>
     </div>
 </template>
 
