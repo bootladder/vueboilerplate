@@ -4,6 +4,9 @@ import { collection, doc, onSnapshot, getDoc, updateDoc, arrayUnion, setDoc } fr
 
 import {onMounted,ref, watch} from 'vue/dist/vue.esm-bundler.js';
 
+import keyboard from './keyboard.js';
+const keyboardstuff = keyboard()
+
 const TitleBar = {
     template: '<div class="border border-black text-center font-bold bg-orange-300 rounded-lg"> Firestore Interface </div>'
 }
@@ -20,6 +23,8 @@ export default {
         })
         
 		return {
+          ...keyboardstuff,
+          evalresult: ref("blah"),
           env: env,
             selectedobject: ref({}),
           model: 3,
@@ -108,11 +113,13 @@ export default {
     <div class="flexrow bg-yellow-200 w-[600px] h-12">
         <div class="ctrlbutton"> A </div>
         <div class="">
-            <div class="w-[300px] bb"> {{selectedobject}} </div>
+            <div class="w-[300px] bb"> $>{{workingarea}} </div>
         </div>
         <div class="ctrlbutton"> X </div>
         <div class="ctrlbutton"> C </div>
     </div>
+
+    {{evalresult}}
 
     </div>
 </template>
