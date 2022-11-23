@@ -120,10 +120,17 @@ export default {
     
         eval_keybinding: function(a) {
             const key = a.split(" ")[1][1].toUpperCase()
+
             if(this.pathlegs.includes(key))
                 this.activebutton = key
+
             else if(key == "P")
                 this.docpathsteps.pop()
+
+            else if(parseInt(key) >= 0){
+                console.log(this.docsincollection[key])
+                this.selectedobject = this.docsincollection[Object.keys(this.docsincollection)[key]]
+            }
         },
     
         eval_inputexpression: function(a) {
@@ -212,9 +219,10 @@ export default {
     <div class="w-[700px] h-[200px] bb m-1 p-1 rounded-lg
                 flexrow">
         <div class="flexcol overflow-y-scroll">
-            <div v-for="(v,k) in docsincollection" 
-                 class="bg-blue-100 p-1 bb text-xs">
-                <div> {{k}} </div>
+            <div v-for="(v,k) in Object.keys(docsincollection)" 
+                 class="bg-blue-100 p-1 bb text-xs flexrow">
+                <div class="bg-blue-300 rounded-xl px-1" > {{k}} </div>
+                <div> {{v}} </div>
             </div>
         </div>
 
