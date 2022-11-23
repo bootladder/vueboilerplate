@@ -24,8 +24,8 @@ export default {
           env: env,
           selectedobject: ref({}),
             activebutton: ref(""),
-            pathlegs: ['Q','W','E','R','T'],
-            docpathsteps: ref(["bootladder", "index","CRM","rolodex"]),
+            pathlegs: ['Q','W','E','R','T','Y'],
+            docpathsteps: ref(["trash", "blah"]),
 		}
 	},
 
@@ -58,6 +58,25 @@ export default {
 
                 this.eval_inputexpression(this.inputexpression.exp)
                 this.inputexpression.exp = ""
+            }
+            ,deep:true,
+        //})
+        },
+
+        docpathsteps: {  async handler(exp,old) {
+                console.log(this.docpathsteps)
+                try{
+                    const docRef = doc(db, ...this.docpathsteps)
+                    const docSnap = await getDoc(docRef);
+
+                    if(docSnap.data() == null){ 
+                        this.selectedobject = "null data"
+                        return; 
+                    }
+                    this.selectedobject = docSnap.data();
+                } catch(e) {
+                    this.selectedobject = "error" + e
+                }
             }
             ,deep:true,
         //})
@@ -117,15 +136,14 @@ export default {
     .bb  {
         @apply border border-black
     }
-    .pathlegsetbutton{
-        @apply text-center text-xs bg-red-400;
-    }
     .flexcol{ @apply flex flex-col }
     .flexrow{ @apply flex flex-row }
-    .pathlegitem { @apply flexcol mx-1 px-1 bb}
-    .ctrlbutton{ @apply w-6 h-6 bg-red-400 rounded-xl text-center font-bold bb m-1 }
-    .ctrlmodeenabled{ @apply w-12 h-6 bg-red-400 rounded-xl text-center font-bold bb m-1 }
-    .ctrlmodedisabled{ @apply w-12 h-6 bg-blue-400 rounded-xl text-center font-bold bb m-1 }
+    .pathlegitemcollection { @apply flexcol mx-1 px-2 bb rounded-lg bg-gray-100}
+    .pathlegitemdocument { @apply flexcol mx-1 px-2 bb rounded-lg bg-gray-300}
+    .pathlegsetbuttonenabled{ @apply w-6 h-6 bg-red-400 rounded-xl text-center font-bold bb m-1 }
+    .pathlegsetbuttondisabled{ @apply w-6 h-6 bg-red-100 rounded-xl text-center font-bold bb m-1 }
+    .ctrlmodeenabled{ @apply w-12 h-6 bg-green-400 rounded-xl text-center font-bold bb m-1 }
+    .ctrlmodedisabled{ @apply w-12 h-6 bg-green-100 rounded-xl text-center font-bold bb m-1 }
 }
 </style>
 
@@ -134,13 +152,12 @@ export default {
 
     <div class="bg-red-100">
         <TitleBar/>
-        <v-btn>hello </v-btn >
 
     <!-- Path Nav -->
-    <div class="flexrow my4">
+    <div class="flexrow my-4 bb rounded-lg py-1 bg-blue-100">
         <div v-for="(v,k) in pathlegs" 
-            class="pathlegitem">
-            <div class="ctrlbutton"> {{v}} </div>
+            :class="k%2? ['pathlegitemcollection']:['pathlegitemdocument']">
+            <div :class="activebutton == v? ['pathlegsetbuttonenabled'] : ['pathlegsetbuttondisabled']"> {{v}} </div>
             <div v-if="activebutton == v">
                 <div class="bg-gray-100"> {{workingarea}}  </div>
             </div>
@@ -150,21 +167,32 @@ export default {
         </div>
     </div>
 
+    <div class="font-bold m-1">
+        {{docpathsteps.join("/")}}
+    </div>
+
     <!-- Obj Render -->
-    <div class="bg-blue-100 w-[400px] h-[200px]">
-        <div class="overflow-y-scroll h-[200px]">
+    <div class="w-[700px] h-[200px] bb m-1 p-1 rounded-lg
+                flexrow">
+        <div class="bg-blue-100 text-xs overflow-y-scroll h-[200px] w-[400px]">
             {{selectedobject}}
+        </div>
+        <div class="">
+            <div> /bootladder/projects/crm </div>
+            <div> /bootladder/projects/crm </div>
+            <div> /bootladder/projects/crm </div>
+            <div> /bootladder/projects/crm </div>
         </div>
     </div>
 
     <!-- REPL -->
     <div class="flexrow bg-yellow-200 w-[600px] h-12">
-        <div class="ctrlbutton"> A </div>
+        <div class="pathlegsetbuttonenabled"> A </div>
         <div class="">
             <div class="w-[300px] bb"> $>>{{workingarea}} </div>
         </div>
-        <div class="ctrlbutton"> X </div>
-        <div class="ctrlbutton"> C </div>
+        <div class="pathlegsetbuttonenabled"> X </div>
+        <div class="pathlegsetbuttonenabled"> C </div>
     </div>
     
     <div :class="controlpanel.ctrlmode? ['ctrlmodeenabled']: ['ctrlmodedisabled']" >
