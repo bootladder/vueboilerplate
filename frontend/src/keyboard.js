@@ -67,7 +67,7 @@ export default function() {
 
     backspace:  v => { if (v) workingarea.value = workingarea.value.slice(0, -1)},
     space:      v => { if (v) keypressed(' ')},
-    //control:    v => { if (v){controlpanel.value.ctrlmode = !controlpanel.value.ctrlmode;} }
+    control:    v => { if (v){controlpanel.value.ctrlmode = !controlpanel.value.ctrlmode;} }
 
     }
 

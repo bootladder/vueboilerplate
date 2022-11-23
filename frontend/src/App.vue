@@ -16,26 +16,16 @@ export default {
         TitleBar,
 	},
 	setup () {
-
-
-        const env = ref({
-            thedatamodel: { shapes: {}},
-        })
+        const env = ref({ thedatamodel: { shapes: {}}, })
         
 		return {
           ...keyboardstuff,
           evalresult: ref("blah"),
           env: env,
-            selectedobject: ref({}),
-          model: 3,
+          selectedobject: ref({}),
+            activebutton: ref(""),
             pathlegs: ['Q','W','E','R','T'],
-          colors: [
-            'primary',
-            'secondary',
-            'yellow darken-2',
-            'red',
-            'orange',
-          ],
+            docpathsteps: ref(["bootladder", "index","CRM","rolodex"]),
 		}
 	},
 
@@ -44,22 +34,73 @@ export default {
     "env.thedatamodel": { async handler(newr, oldr) {
             }, deep:true,
         },
+
+        keybindingexpression: {  async handler(exp,old) {
+                console.log("KEYBINDING EXPRESSON")
+                if(this.keybindingexpression.exp == "") return;
+                console.log("KEYBINDING EXPRESSON IS: " + this.keybindingexpression.exp)
+
+
+                // KLUDGE INDICATORS
+                this.env.lastcontrolkeypressed = this.lastkey
+                setTimeout( () => {this.env.lastcontrolkeypressed = ""}  , 100)
+
+                this.evalresult = "Hello"
+                this.eval_keybinding(this.keybindingexpression.exp)
+                this.keybindingexpression.exp = ""
+            }
+            ,deep:true,
+        //})
+        },
+
+        inputexpression: {  async handler(exp,old) {
+                if(this.inputexpression.exp == "") return;
+
+                this.eval_inputexpression(this.inputexpression.exp)
+                this.inputexpression.exp = ""
+            }
+            ,deep:true,
+        //})
+        },
+
+
+
+
       },
 
-	methods: {
-	},
+	methods: { 
+    
+        eval_keybinding: function(a) {
+            this.activebutton = a.split(" ")[1][1].toUpperCase()
+        },
+    
+        eval_inputexpression: function(a) {
+            console.log(this.pathlegs)
+            console.log(this.pathlegs.indexOf(this.activebutton))
+            console.log(a)
+            console.log(this.activebutton)
+            console.log(this.pathlegs)
+            console.log(this.pathlegs.includes(this.activebutton))
+            if(this.pathlegs.includes(this.activebutton)){
+                this.evalresult = "chlkasdjlksaj"
+               this.docpathsteps[ this.pathlegs.indexOf(this.activebutton) ] = a
+               this.activebutton = ""
+            }
+            this.evalresult = "yay"
+        },
 
-	computed: {
-	},
+    },
+	computed: { },
 
 
   async mounted() {
 
-    const docRef = doc(db, "bootladder", "index","temp","tempdoc")
+    console.log(this.docpathsteps)
+    const docRef = doc(db, ...this.docpathsteps)
     const docSnap = await getDoc(docRef);
 
     if(docSnap.data() == null){ return; }
-    this.env = docSnap.data();
+    this.selectedobject = docSnap.data();
 
   }
 }
@@ -83,6 +124,8 @@ export default {
     .flexrow{ @apply flex flex-row }
     .pathlegitem { @apply flexcol mx-1 px-1 bb}
     .ctrlbutton{ @apply w-6 h-6 bg-red-400 rounded-xl text-center font-bold bb m-1 }
+    .ctrlmodeenabled{ @apply w-12 h-6 bg-red-400 rounded-xl text-center font-bold bb m-1 }
+    .ctrlmodedisabled{ @apply w-12 h-6 bg-blue-400 rounded-xl text-center font-bold bb m-1 }
 }
 </style>
 
@@ -98,13 +141,18 @@ export default {
         <div v-for="(v,k) in pathlegs" 
             class="pathlegitem">
             <div class="ctrlbutton"> {{v}} </div>
-            <div class=""> 12345678 </div>
+            <div v-if="activebutton == v">
+                <div class="bg-gray-100"> {{workingarea}}  </div>
+            </div>
+            <div v-else>
+                <div class=""> {{docpathsteps[k] }}</div>
+            </div>
         </div>
     </div>
 
     <!-- Obj Render -->
     <div class="bg-blue-100 w-[400px] h-[200px]">
-        <div>
+        <div class="overflow-y-scroll h-[200px]">
             {{selectedobject}}
         </div>
     </div>
@@ -113,13 +161,18 @@ export default {
     <div class="flexrow bg-yellow-200 w-[600px] h-12">
         <div class="ctrlbutton"> A </div>
         <div class="">
-            <div class="w-[300px] bb"> $>{{workingarea}} </div>
+            <div class="w-[300px] bb"> $>>{{workingarea}} </div>
         </div>
         <div class="ctrlbutton"> X </div>
         <div class="ctrlbutton"> C </div>
     </div>
+    
+    <div :class="controlpanel.ctrlmode? ['ctrlmodeenabled']: ['ctrlmodedisabled']" >
+        CTRL
+    </div>
 
-    {{evalresult}}
+    <div>evalresult: {{evalresult}}  </div>
+    <div>activebutton: {{activebutton}}</div>
 
     </div>
 </template>
