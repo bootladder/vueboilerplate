@@ -3,7 +3,7 @@
 @tailwind utilities;
 
 @layer components {
-    .blackborder  {
+    .bb  {
         @apply border border-black
     }
 
