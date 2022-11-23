@@ -1,6 +1,6 @@
 <script>
 import { app, db } from './firebase.js'
-import { collection, doc, onSnapshot, getDoc, updateDoc, arrayUnion, setDoc } from "firebase/firestore";
+import { collection, doc, onSnapshot, getDoc,getDocs, updateDoc, arrayUnion, setDoc } from "firebase/firestore";
 
 import {onMounted,ref, watch} from 'vue/dist/vue.esm-bundler.js';
 
@@ -22,8 +22,10 @@ export default {
           ...keyboardstuff,
           evalresult: ref("blah"),
           env: env,
+            docsincollection: ref({}),
           selectedobject: ref({}),
             activebutton: ref(""),
+            logs: ref([]),
             pathlegs: ['Q','W','E','R','T','Y'],
             docpathsteps: ref(["trash", "blah"]),
 		}
@@ -36,10 +38,7 @@ export default {
         },
 
         keybindingexpression: {  async handler(exp,old) {
-                console.log("KEYBINDING EXPRESSON")
                 if(this.keybindingexpression.exp == "") return;
-                console.log("KEYBINDING EXPRESSON IS: " + this.keybindingexpression.exp)
-
 
                 // KLUDGE INDICATORS
                 this.env.lastcontrolkeypressed = this.lastkey
@@ -63,19 +62,49 @@ export default {
         //})
         },
 
+
+        // User changed the path with qwerty
         docpathsteps: {  async handler(exp,old) {
                 console.log(this.docpathsteps)
-                try{
-                    const docRef = doc(db, ...this.docpathsteps)
-                    const docSnap = await getDoc(docRef);
+                console.log(this.docpathsteps.length)
 
-                    if(docSnap.data() == null){ 
-                        this.selectedobject = "null data"
-                        return; 
+                switch(this.docpathsteps.length % 2){
+                    case 0: {
+                        try{
+                            const docRef = doc(db, ...this.docpathsteps)
+                            const docSnap = await getDoc(docRef);
+
+                            if(docSnap.data() == null){ 
+                                this.selectedobject = "null data"
+                                return; 
+                            }
+                            this.selectedobject = docSnap.data();
+                        } catch(e) {
+                            this.selectedobject = "error" + e
+                        }
+                        break;
                     }
-                    this.selectedobject = docSnap.data();
-                } catch(e) {
-                    this.selectedobject = "error" + e
+                    case 1: {
+                        this.selectedobject = "COLLECTION!"
+                        try{
+
+                            const querySnapshot = //this.docpathsteps.length == 1?
+                                await getDocs(collection(db, ...this.docpathsteps))
+                             //:  await getDocs(collection(db, ...this.docpathsteps.slice(0,-1)))
+                            
+
+                              this.docsincollection = {}
+                            querySnapshot.forEach((doc) => {
+                              // doc.data() is never undefined for query doc snapshots
+                              this.docsincollection[doc.id] = doc.data();
+                              this.logs.push(doc.id, " => ", doc.data());
+                            });
+
+                        } catch(e) {
+                            this.selectedobject = "error" + e
+                        }
+                        break;
+                    }
                 }
             }
             ,deep:true,
@@ -90,7 +119,11 @@ export default {
 	methods: { 
     
         eval_keybinding: function(a) {
-            this.activebutton = a.split(" ")[1][1].toUpperCase()
+            const key = a.split(" ")[1][1].toUpperCase()
+            if(this.pathlegs.includes(key))
+                this.activebutton = key
+            else if(key == "P")
+                this.docpathsteps.pop()
         },
     
         eval_inputexpression: function(a) {
@@ -134,7 +167,7 @@ export default {
 
 @layer components {
     .bb  {
-        @apply border border-black
+        @apply border border-black rounded-lg
     }
     .flexcol{ @apply flex flex-col }
     .flexrow{ @apply flex flex-row }
@@ -165,23 +198,28 @@ export default {
                 <div class=""> {{docpathsteps[k] }}</div>
             </div>
         </div>
+
+        <div class='pathlegsetbuttondisabled mx-8'> P (Pop) </div>
     </div>
 
-    <div class="font-bold m-1">
-        {{docpathsteps.join("/")}}
+    
+    <div>
+        Col Path: <span class="font-bold m-1">{{docpathsteps.slice(0,-1).join("/")}} </span>
+        Doc Path: <span class="font-bold m-1">{{docpathsteps.join("/")}} </span>
     </div>
 
     <!-- Obj Render -->
     <div class="w-[700px] h-[200px] bb m-1 p-1 rounded-lg
                 flexrow">
-        <div class="bg-blue-100 text-xs overflow-y-scroll h-[200px] w-[400px]">
-            {{selectedobject}}
+        <div class="flexcol overflow-y-scroll">
+            <div v-for="(v,k) in docsincollection" 
+                 class="bg-blue-100 p-1 bb text-xs">
+                <div> {{k}} </div>
+            </div>
         </div>
-        <div class="">
-            <div> /bootladder/projects/crm </div>
-            <div> /bootladder/projects/crm </div>
-            <div> /bootladder/projects/crm </div>
-            <div> /bootladder/projects/crm </div>
+
+        <div class="bg-blue-100 bb mx-1 text-xs overflow-y-scroll h-[200px] w-[400px]">
+            {{selectedobject}}
         </div>
     </div>
 
@@ -201,6 +239,7 @@ export default {
 
     <div>evalresult: {{evalresult}}  </div>
     <div>activebutton: {{activebutton}}</div>
+    <div>Logs: {{logs}}</div>
 
     </div>
 </template>
