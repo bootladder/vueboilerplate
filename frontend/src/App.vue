@@ -19,14 +19,15 @@ export default {
 		return {
           ...keyboardstuff,
           evalresult: ref("blah"),
-            docsincollection: ref({}),
+            docsincollection: ref({nodoc: "nodoc"}),
           selectedobject: ref({}),
             activebutton: ref(""),
             lastcontrolkeypressed : ref(""),
             logs: ref([]),
             pathlegkeybindings: ['Q','W','E','R','T','Y'],
-            shortcutpathkeybindings: ['Z','X','C','V','B','N'],
             docpathsteps: ref(["trash", "blah"]),
+            shortcutpathkeybindings: ['Z','X','C','V','B','N'],
+            shortcutpaths: ref(['/gcode','/gcode/env0']),
 		}
 	},
 
@@ -120,6 +121,14 @@ export default {
             if(this.pathlegkeybindings.includes(key))
                 this.activebutton = key
 
+
+            // Shortcut key is pressed
+            // Set the docpathsteps
+            if(this.shortcutpathkeybindings.includes(key)){
+                const shortcutpath = this.shortcutpaths[ this.shortcutpathkeybindings.indexOf(key)]
+                this.docpathsteps = shortcutpath.split('/').slice(1)
+            }
+
             else if(key == "P")
                 this.docpathsteps.pop()
 
@@ -179,6 +188,11 @@ export default {
 
 <template>
 
+    <Ruler dir="x" />
+<div class="flexrow">
+<Ruler dir="y" />
+<div class="flexcol">
+
     <div class="bg-red-100">
         <TitleBar/>
 
@@ -199,15 +213,17 @@ export default {
     </div>
 
     
+    <!-- Show the Paths -->
     <div>
         Col Path: <span class="font-bold m-1">{{docpathsteps.slice(0,-1).join("/")}} </span>
         Doc Path: <span class="font-bold m-1">{{docpathsteps.join("/")}} </span>
     </div>
 
-    <!-- Obj Render -->
+    <!-- SECTION -->
     <div class="w-[700px] h-[200px] bb m-1 p-1 rounded-lg
                 flexrow">
-        <div class="flexcol overflow-y-scroll">
+        <!-- Docs in Collection -->
+        <div class="w-[200px] flexcol overflow-y-scroll">
             <div v-for="(v,k) in Object.keys(docsincollection)" 
                  class="bg-blue-100 p-1 bb text-xs flexrow">
                 <div class="bg-blue-300 rounded-xl px-1" > {{k}} </div>
@@ -215,8 +231,14 @@ export default {
             </div>
         </div>
 
+        <!-- Selected Doc -->
         <div class="bg-blue-100 bb mx-1 text-xs overflow-y-scroll h-[200px] w-[400px]">
             {{selectedobject}}
+        </div>
+
+        <!-- Shortcut Paths -->
+        <div class="bg-blue-100 bb mx-1 text-xs overflow-y-scroll h-[200px] w-[200px]">
+            {{shortcutpaths}}
         </div>
     </div>
 
@@ -239,5 +261,8 @@ export default {
     <div>Logs: {{logs}}</div>
 
     </div>
+
+</div>
+</div>
 </template>
 

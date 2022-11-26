@@ -17,4 +17,7 @@ const vuetify = createVuetify({
 
 const vueapp = createApp(App).use(vuetify) //.mount('#app')
 
+import Ruler from './Ruler.vue'
+vueapp.component('Ruler',Ruler)
+
 vueapp.mount('#app')
