@@ -16,33 +16,29 @@ export default {
         TitleBar,
 	},
 	setup () {
-        const env = ref({ thedatamodel: { shapes: {}}, })
-        
 		return {
           ...keyboardstuff,
           evalresult: ref("blah"),
-          env: env,
             docsincollection: ref({}),
           selectedobject: ref({}),
             activebutton: ref(""),
+            lastcontrolkeypressed : ref(""),
             logs: ref([]),
-            pathlegs: ['Q','W','E','R','T','Y'],
+            pathlegkeybindings: ['Q','W','E','R','T','Y'],
+            shortcutpathkeybindings: ['Z','X','C','V','B','N'],
             docpathsteps: ref(["trash", "blah"]),
 		}
 	},
 
 
   watch: {
-    "env.thedatamodel": { async handler(newr, oldr) {
-            }, deep:true,
-        },
 
         keybindingexpression: {  async handler(exp,old) {
                 if(this.keybindingexpression.exp == "") return;
 
                 // KLUDGE INDICATORS
-                this.env.lastcontrolkeypressed = this.lastkey
-                setTimeout( () => {this.env.lastcontrolkeypressed = ""}  , 100)
+                this.lastcontrolkeypressed = this.lastkey
+                setTimeout( () => {this.lastcontrolkeypressed = ""}  , 100)
 
                 this.evalresult = "Hello"
                 this.eval_keybinding(this.keybindingexpression.exp)
@@ -121,7 +117,7 @@ export default {
         eval_keybinding: function(a) {
             const key = a.split(" ")[1][1].toUpperCase()
 
-            if(this.pathlegs.includes(key))
+            if(this.pathlegkeybindings.includes(key))
                 this.activebutton = key
 
             else if(key == "P")
@@ -134,15 +130,9 @@ export default {
         },
     
         eval_inputexpression: function(a) {
-            console.log(this.pathlegs)
-            console.log(this.pathlegs.indexOf(this.activebutton))
-            console.log(a)
-            console.log(this.activebutton)
-            console.log(this.pathlegs)
-            console.log(this.pathlegs.includes(this.activebutton))
-            if(this.pathlegs.includes(this.activebutton)){
+            if(this.pathlegkeybindings.includes(this.activebutton)){
                 this.evalresult = "chlkasdjlksaj"
-               this.docpathsteps[ this.pathlegs.indexOf(this.activebutton) ] = a
+               this.docpathsteps[ this.pathlegkeybindings.indexOf(this.activebutton) ] = a
                this.activebutton = ""
             }
             this.evalresult = "yay"
@@ -188,14 +178,13 @@ export default {
 </style>
 
 <template>
-{{env}}
 
     <div class="bg-red-100">
         <TitleBar/>
 
     <!-- Path Nav -->
     <div class="flexrow my-4 bb rounded-lg py-1 bg-blue-100">
-        <div v-for="(v,k) in pathlegs" 
+        <div v-for="(v,k) in pathlegkeybindings" 
             :class="k%2? ['pathlegitemcollection']:['pathlegitemdocument']">
             <div :class="activebutton == v? ['pathlegsetbuttonenabled'] : ['pathlegsetbuttondisabled']"> {{v}} </div>
             <div v-if="activebutton == v">
