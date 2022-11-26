@@ -238,7 +238,11 @@ export default {
 
         <!-- Shortcut Paths -->
         <div class="bg-blue-100 bb mx-1 text-xs overflow-y-scroll h-[200px] w-[200px]">
-            {{shortcutpaths}}
+            <div v-for="(v,k) in shortcutpaths"
+                 class="bg-blue-100 p-1 bb text-xs flexrow">
+                <div class="bg-blue-300 rounded-xl px-1" > {{shortcutpathkeybindings[k]}} </div>
+                <div> {{v}} </div>
+            </div>
         </div>
     </div>
 
