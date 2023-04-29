@@ -26,6 +26,7 @@ export default {
 <template>
     <div>
         <h1> BLAH </h1>
+        <h1 class="font-bold"> BLAH </h1>
     </div>
 </template>
 
