@@ -6,7 +6,8 @@ services:
     image: node:latest
     command: "/app/runincontainer.sh"
     working_dir: /app
-    ports:
-      - "15000:5173"
+    network_mode: "host"
+    #ports:
+    #  - "15000:5173"
     volumes:
       - "./frontend:/app"

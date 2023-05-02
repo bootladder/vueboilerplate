@@ -3,7 +3,7 @@
   <div class="border border-gray-300 p-4">
     <h3 class="font-bold mb-2">Hello</h3>
     <textarea
-      class="w-full resize-none border rounded-md p-2"
+      class="h-full w-full resize-none border rounded-md p-2"
       @input="$emit('update:modelValue', $event.target.value)"
     ></textarea>
   </div>
