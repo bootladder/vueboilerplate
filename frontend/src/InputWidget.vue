@@ -1,6 +1,6 @@
 
 <template>
-  <div class="text-xs border border-gray-300 p-4 h-48">
+  <div class="text-xs border border-gray-300 p-4 h-96 w-96">
     <h3 class="font-bold mb-2">Hello</h3>
     <textarea
         :value="initialValue"   

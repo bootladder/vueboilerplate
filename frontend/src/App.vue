@@ -20,13 +20,18 @@ export default {
             blah: ref('hello world'),
             userinputtext: ref("dc\n d\n t\nd"),
             tagTableText: ref(JSON.stringify(initTagTable,null,2) ),
+            outputref: ref(null),
 		}
 	},
 
 
     watch: {},
 
-    methods: { },
+    methods: {
+        loadoutputhtml:function(){
+            this.$refs.outputref.innerHTML = this.outputhtmlstring
+        },
+     },
     computed: { 
         tagTable: function(){
             return JSON.parse(this.tagTableText)
@@ -131,11 +136,13 @@ export default {
 
 <template>
 <div class="flex flex-col">
-    <div class="flex flex-row">
+    <div class="flex flex-row h-96 border-4 border-black">
         <InputWidget v-model="userinputtext" :initialValue="userinputtext"/>
         <InputWidget v-model="tagTableText" :initialValue="tagTableText"/>
-        <div class="p-1 m-1 bg-gray-100 text-xs w-48">{{outputhtmlstring}}</div>
+    </div>
+    <div class="flex flex-row h-96 w-96 p-4 border-black border-4">
         <div v-html="outputhtmlstring"></div>
+        <div @click="loadoutputhtml" ref="outputref">load</div>
     </div>
     <div class="flex flex-row">
         <InputWidget v-model="userinputtext" :initialValue="1+1"/>
