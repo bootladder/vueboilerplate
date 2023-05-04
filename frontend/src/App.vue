@@ -2,7 +2,7 @@
 const cl = console.log
 import {onMounted,ref, watch} from 'vue/dist/vue.esm-bundler.js';
 const dashes="-----------------------------------------------------"
-const tagTable = {
+const initTagTable = {
     'd': '<div>',
     '/d': '</div>',
     'dr': '<div class="flex flex-row">',
@@ -19,6 +19,7 @@ export default {
 		return {
             blah: ref('hello world'),
             userinputtext: ref("dc\n d\n t\nd"),
+            tagTableText: ref(JSON.stringify(initTagTable,null,2) ),
 		}
 	},
 
@@ -27,6 +28,9 @@ export default {
 
     methods: { },
     computed: { 
+        tagTable: function(){
+            return JSON.parse(this.tagTableText)
+        },
         indentdata: function(){
             const poop = (this.userinputtext.split('\n').map((line) => {
                         const indent = line.length - line.trimLeft().length
@@ -81,10 +85,10 @@ export default {
             return newdict.sort( (d1,d2) => parseInt(d1[0]) > parseInt(d2[0]))
         },
         outputarrayraw: function(){
-            return this.siblingdictplusclosingsorted.map(s =>tagTable[s[2]])
+            return this.siblingdictplusclosingsorted.map(s =>this.tagTable[s[2]])
         },
         outputarray: function(){
-            return this.siblingdictplusclosingsorted.map(s => dashes.slice(0,s[1]*4) +  tagTable[s[2]])
+            return this.siblingdictplusclosingsorted.map(s => dashes.slice(0,s[1]*4) +  this.tagTable[s[2]])
         },
         outputhtmlstring: function(){
             return this.outputarrayraw.join("")
@@ -128,12 +132,13 @@ export default {
 <template>
 <div class="flex flex-col">
     <div class="flex flex-row">
-        <InputWidget v-model="userinputtext"/>
+        <InputWidget v-model="userinputtext" :initialValue="userinputtext"/>
+        <InputWidget v-model="tagTableText" :initialValue="tagTableText"/>
         <div class="p-1 m-1 bg-gray-100 text-xs w-48">{{outputhtmlstring}}</div>
         <div v-html="outputhtmlstring"></div>
     </div>
     <div class="flex flex-row">
-        <InputWidget v-model="userinputtext"/>
+        <InputWidget v-model="userinputtext" :initialValue="1+1"/>
         <pre class="p-1 m-1 bg-gray-100 text-xs">{{positiondata.map(s => s.toString().padStart(8,"0")) }}</pre>
         <pre class="p-1 m-1 bg-gray-100 text-xs">{{siblingdata}}</pre>
         <pre class="p-1 m-1 bg-gray-100 text-xs">{{siblingdict}}</pre>
@@ -142,7 +147,7 @@ export default {
         <pre class="p-1 m-1 bg-gray-100 text-xs">{{outputarray}}</pre>
     </div>
     <div class="flex flex-row">
-        <InputWidget v-model="userinputtext"/>
+        <InputWidget v-model="userinputtext" :initialValue="1+1"/>
         <pre class="p-1 m-1 bg-gray-100 text-xs">{{indentdata}}</pre>
         <IndentParserView :tuples="indentdata" class="p-1 m-1 bg-gray-100"/>
         <ColorDivView :tuples="indentdata" class="p-1 m-1 bg-gray-100"/>

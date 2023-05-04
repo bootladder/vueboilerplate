@@ -3,6 +3,7 @@
   <div class="text-xs border border-gray-300 p-4 h-48">
     <h3 class="font-bold mb-2">Hello</h3>
     <textarea
+        :value="initialValue"   
       class="h-full w-full resize-none border rounded-md p-2"
       @input="$emit('update:modelValue', $event.target.value)"
     ></textarea>
@@ -10,11 +11,9 @@
 </template>
 
 <script setup>
-import { defineEmits } from 'vue'
+import { defineEmits,defineProps } from 'vue'
 
-const props = {
-  modelValue: String
-}
+const props = defineProps(['modelValue','initialValue'])
 
 const emits = defineEmits(['update:modelValue'])
 </script>
