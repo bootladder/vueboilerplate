@@ -1,6 +1,6 @@
 
 <template>
-  <div class="border border-gray-300 p-4">
+  <div class="text-xs border border-gray-300 p-4 h-48">
     <h3 class="font-bold mb-2">Hello</h3>
     <textarea
       class="h-full w-full resize-none border rounded-md p-2"

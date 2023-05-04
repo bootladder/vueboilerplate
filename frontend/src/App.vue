@@ -5,10 +5,12 @@ const dashes="-----------------------------------------------------"
 const tagTable = {
     'd': '<div>',
     '/d': '</div>',
-    'dr': '<div class="flexrow">',
+    'dr': '<div class="flex flex-row">',
     '/dr': '</div>',
-    'dc': '<div class="flexcol">',
+    'dc': '<div class="flex flex-col">',
     '/dc': '</div>',
+    't': 'hello',
+    '/t': '',
 }
 
 
@@ -16,7 +18,7 @@ export default {
 	setup () {
 		return {
             blah: ref('hello world'),
-            userinputtext: ref("d\n d\n d\n"),
+            userinputtext: ref("dc\n d\n t\nd"),
 		}
 	},
 
@@ -78,8 +80,14 @@ export default {
             })
             return newdict.sort( (d1,d2) => parseInt(d1[0]) > parseInt(d2[0]))
         },
+        outputarrayraw: function(){
+            return this.siblingdictplusclosingsorted.map(s =>tagTable[s[2]])
+        },
         outputarray: function(){
             return this.siblingdictplusclosingsorted.map(s => dashes.slice(0,s[1]*4) +  tagTable[s[2]])
+        },
+        outputhtmlstring: function(){
+            return this.outputarrayraw.join("")
         },
         updownsequence: function(){
             var seq = []
@@ -119,6 +127,11 @@ export default {
 
 <template>
 <div class="flex flex-col">
+    <div class="flex flex-row">
+        <InputWidget v-model="userinputtext"/>
+        <div class="p-1 m-1 bg-gray-100 text-xs w-48">{{outputhtmlstring}}</div>
+        <div v-html="outputhtmlstring"></div>
+    </div>
     <div class="flex flex-row">
         <InputWidget v-model="userinputtext"/>
         <pre class="p-1 m-1 bg-gray-100 text-xs">{{positiondata.map(s => s.toString().padStart(8,"0")) }}</pre>
