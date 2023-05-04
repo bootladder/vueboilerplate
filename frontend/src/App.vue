@@ -2,6 +2,14 @@
 const cl = console.log
 import {onMounted,ref, watch} from 'vue/dist/vue.esm-bundler.js';
 const dashes="-----------------------------------------------------"
+const tagTable = {
+    'd': '<div>',
+    '/d': '</div>',
+    'dr': '<div class="flexrow">',
+    '/dr': '</div>',
+    'dc': '<div class="flexcol">',
+    '/dc': '</div>',
+}
 
 
 export default {
@@ -24,6 +32,54 @@ export default {
                     }))
             cl(poop)
             return poop
+        },
+        positiondata: function(){
+            return this.userinputtext.split('\n').map( (line) => {
+                const indent = line.length - line.trimLeft().length
+                const NUMDIGITS = 8
+                return Math.pow(10,NUMDIGITS - indent - 1)
+            })
+        },
+        siblingdata: function(){
+            const NUMDIGITS = 8
+            var acc = 0
+            return this.userinputtext.split('\n').map( (line) => {
+                const indent = line.length - line.trimLeft().length
+                acc =  acc+Math.pow(10,NUMDIGITS - indent - 1)
+                return acc
+            })
+        },
+        siblingdict: function(){
+            const NUMDIGITS = 8
+            var acc = 0
+            return this.userinputtext.split('\n').map( (line) => {
+                const indent = line.length - line.trimLeft().length
+                acc =  acc+Math.pow(10,NUMDIGITS - indent - 1)
+                return [acc, indent, line.trimLeft()]
+            })
+        },
+        siblingdictplusclosing: function(){
+            const NUMDIGITS = 8
+            var acc = 0
+            const newdict = JSON.parse(JSON.stringify(this.siblingdict))
+            this.siblingdict.forEach( d => {
+                const newitem = [d[0] + Math.pow(10,NUMDIGITS-d[1] -2) * 9, d[1],d[2]]
+                newdict.push(newitem)
+            })
+            return newdict
+        },
+        siblingdictplusclosingsorted: function(){
+            const NUMDIGITS = 8
+            var acc = 0
+            const newdict = JSON.parse(JSON.stringify(this.siblingdict))
+            this.siblingdict.forEach( d => {
+                const newitem = [d[0] + Math.pow(10,NUMDIGITS-d[1] -2) * 9, d[1],"/"+d[2]]
+                newdict.push(newitem)
+            })
+            return newdict.sort( (d1,d2) => parseInt(d1[0]) > parseInt(d2[0]))
+        },
+        outputarray: function(){
+            return this.siblingdictplusclosingsorted.map(s => dashes.slice(0,s[1]*4) +  tagTable[s[2]])
         },
         updownsequence: function(){
             var seq = []
@@ -62,7 +118,16 @@ export default {
 
 
 <template>
-alright!
+<div class="flex flex-col">
+    <div class="flex flex-row">
+        <InputWidget v-model="userinputtext"/>
+        <pre class="p-1 m-1 bg-gray-100 text-xs">{{positiondata.map(s => s.toString().padStart(8,"0")) }}</pre>
+        <pre class="p-1 m-1 bg-gray-100 text-xs">{{siblingdata}}</pre>
+        <pre class="p-1 m-1 bg-gray-100 text-xs">{{siblingdict}}</pre>
+        <pre class="p-1 m-1 bg-gray-100 text-xs">{{siblingdictplusclosing}}</pre>
+        <pre class="p-1 m-1 bg-gray-100 text-xs">{{siblingdictplusclosingsorted}}</pre>
+        <pre class="p-1 m-1 bg-gray-100 text-xs">{{outputarray}}</pre>
+    </div>
     <div class="flex flex-row">
         <InputWidget v-model="userinputtext"/>
         <pre class="p-1 m-1 bg-gray-100 text-xs">{{indentdata}}</pre>
@@ -71,5 +136,6 @@ alright!
         <ColorDivView :tuples="closingindentdata" class="p-1 m-1 bg-gray-100"/>
         <UpDownSequence :seq="updownsequence"/>
     </div>
+</div>
 </template>
 
