@@ -2,13 +2,14 @@
 import {ref} from "vue"
 const newnote = ref("nonote")
 const url = "http://localhost:16001/add"
+const emits = defineEmits(['dirty']);
+    
 
 const savebuttonclicked = (s) => {
-    alert("bah" + JSON.stringify(newnote.value))
     fetch(url, {
         method:"POST",
         body:JSON.stringify({note: newnote.value}),
-    }).then(s => alert(s)).catch(e=>alert('fail fetch' + e))
+    }).then(s => emits('dirty', {})).catch(e=>alert('fail fetch' + e))
 }
 </script>
 
