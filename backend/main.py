@@ -11,6 +11,8 @@ import traceback
 import os
 import json
 
+PATHTOFILES = "/notes/"
+
 # Init FastAPI
 app = FastAPI()
 
@@ -47,7 +49,7 @@ app.add_middleware(
 
 @app.get("/filenamelist/")
 async def _getfilenamelist():
-    dir_list = os.listdir("/ledgers/")
+    dir_list = os.listdir(PATHTOFILES)
     return JSONResponse(content=dir_list, status_code=200)
 
 
@@ -124,123 +126,3 @@ async def _addtransactiontoledger(request: Request, rest_of_path: str):
 
     myjson = json.loads("\"OK\"")
     return JSONResponse(content=myjson, status_code=200)
-
-
-
-
-
-@app.post("/edit/{rest_of_path:path}")
-async def edittransactionofledger(request: Request, rest_of_path: str):
-    requestjson  = await request.json()
-    print(requestjson)
-
-    print(rest_of_path)
-    targetledgerpath = rest_of_path.split("/")
-    transactionindex = targetledgerpath[-1]
-    targetledgerpath.pop()
-    print(targetledgerpath)
-    targetledgerpath = "/".join(targetledgerpath)
-    print(targetledgerpath)
-    print(transactionindex)
-
-    # TODO VALIDATE FILENAME
-    with open(targetledgerpath) as f:
-        ledgerdata = json.load(f)
-        #print(ledgerdata)
-
-    ledgerdata[transactionindex] = requestjson
-
-    print(ledgerdata)
-
-    with open(targetledgerpath, 'w') as f:
-        print("opened f")
-        f.write(json.dumps(ledgerdata,    sort_keys=True, indent=4))
-
-    # last leg of path is the key to the file
-    # everything before is the path to the file
-
-    teststring = '"OK"'
-    myjson = json.loads(teststring)
-    return JSONResponse(content=teststring, status_code=200)
-
-
-def deletetransactionofledger(path):
-
-    print(path)
-    targetledgerpath = "/" + path
-    targetledgerpath = targetledgerpath.split("/")
-    transactionindex = targetledgerpath[-1]
-    print(targetledgerpath)
-    targetledgerpath.pop()
-    print(targetledgerpath)
-    targetledgerpath = "/".join(targetledgerpath)
-    print(targetledgerpath)
-    print(targetledgerpath)
-    print(transactionindex)
-
-    # TODO VALIDATE FILENAME
-    with open(targetledgerpath) as f:
-        ledgerdata = json.load(f)
-        #print(ledgerdata)
-
-    del ledgerdata[transactionindex]
-
-    print(ledgerdata)
-
-    with open(targetledgerpath, 'w') as f:
-        print("opened f")
-        f.write(json.dumps(ledgerdata,    sort_keys=True, indent=4))
-
-    return "OK?"
-
-
-@app.post("/delete/{rest_of_path:path}")
-async def _deletetransactionofledger(request: Request, rest_of_path: str):
-    ret = deletetransactionofledger(rest_of_path)
-
-    return JSONResponse(content=ret, status_code=200)
-
-
-# MOVE
-# sourcetransaction: path
-# destinationledger: path
-# copy the source transaction using the path
-# add transaction to destination ledger
-# delete sourcetransaction
-
-@app.post("/move/")
-async def movetransactiontoledger(request: Request):
-    requestjson  = await request.json()
-    print(requestjson)
-
-    sourcetransactionpath = requestjson['sourcetransaction']
-    destinationledgerpath = requestjson['destinationledger']
-
-    print("Source Transaction: " + sourcetransactionpath)
-    targetledgerpath = sourcetransactionpath.split("/")
-    transactionindex = targetledgerpath[-1]
-    targetledgerpath.pop()
-    print(targetledgerpath)
-    targetledgerpath = "/".join(targetledgerpath)
-    print(targetledgerpath)
-    print(transactionindex)
-
-    with open(targetledgerpath) as f:
-        ledgerdata = json.load(f)
-
-    sourcetransaction = ledgerdata[transactionindex]
-    print("Source Transaction: " )
-    print(sourcetransaction)
-
-
-    # Add
-    addtransactiontoledger(sourcetransaction, destinationledgerpath)
-
-    # Delete
-
-    deletetransactionofledger(sourcetransactionpath)
-
-
-    teststring = '"OK"'
-    myjson = json.loads(teststring)
-    return JSONResponse(content=teststring, status_code=200)
