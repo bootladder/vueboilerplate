@@ -21,7 +21,8 @@ origins = [
     "http://localhost:5090",
     "http://localhost:5080",
     "http://*:16090",
-    "http://localhost:16090",
+    "http://localhost:16000",
+    "http://localhost:16001",
 ]
 
 app.add_middleware(
@@ -54,34 +55,35 @@ async def _getfilenamelist():
 
 
 # filename is dir prefix for frontend
-def getledgers(filename):
+def getnotes(filename):
     # Get Ledgers (.ledger.json) in the selected path to ledger
-    path = "/ledgers/" + filename + "/"
+    path = PATHTOFILES
     recursivefilepathlist = []
+    print(path) 
 
     for root, dirs, files in os.walk(path):
         recursivefilepathlist += list(map(lambda f: root + "/" + f, files))
-     
+    print(recursivefilepathlist) 
     # filter for *.ledger.json
-    ledgerfilepaths = list(filter(lambda f: \
-            f.endswith(".ledger.json"), recursivefilepathlist))
+    filepaths = list(filter(lambda f: \
+            f.endswith(".json"), recursivefilepathlist))
 
-    print("THE LEDGER FILENAMES")
-    print(ledgerfilepaths)
+    print("THE FILENAMES")
+    print(filepaths)
 
     ## Create Dict
     ledgersdict = {}
-    for filepath in ledgerfilepaths:
+    for filepath in filepaths:
         with open(filepath) as f:
             ledgerdata = json.load(f)
             ledgersdict[filepath] = ledgerdata
     return ledgersdict
 
-@app.get("/ledgers/{filename:path}")
-async def _getledgers(filename:str):
-    ledgersdict = getledgers(filename)
-    print(ledgersdict)
-    return JSONResponse(content=ledgersdict, status_code=200)
+@app.get("/notes/{filename:path}")
+async def _getnotes(filename:str):
+    datadict = getnotes(filename)
+    print(datadict)
+    return JSONResponse(content=datadict, status_code=200)
 
 
 def addtransactiontoledger(transaction, ledger):
