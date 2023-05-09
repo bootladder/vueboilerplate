@@ -10,3 +10,12 @@ services:
       - "16000:5173"
     volumes:
       - "./frontend:/app"
+
+  notetakerbackend:
+    container_name: "notetakerbackend"
+    build: .
+    ports:
+      - "16001:80"
+    volumes:
+      - "/opt/projects/notetakernotes/:/notes"
+      - "./backend:/app"
