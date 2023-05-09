@@ -21,7 +21,7 @@ export default {
         },
         fetchNotes: function(){
             
-            fetch(url).then(s => s.json()).then(s => this.notes.value = s).catch(e=>console.log('fail fetch' + e))
+            fetch(url).then(s => s.json()).then(s => this.notes= s).catch(e=>console.log('fail fetch' + e))
         },
      },
     computed: { },
