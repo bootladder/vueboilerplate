@@ -86,45 +86,33 @@ async def _getnotes(filename:str):
     return JSONResponse(content=datadict, status_code=200)
 
 
-def addtransactiontoledger(transaction, ledger):
-    targetledgerpath = "/" + ledger
+def addnote(transaction, notesfilename):
+    targetfilepath = PATHTOFILES + "/" + notesfilename
+    print(targetfilepath)
 
     try:
 
-        with open(targetledgerpath) as f:
+        with open(targetfilepath) as f:
             ledgerdata = json.load(f)
 
-        # Get Highest Key in the Ledger
-        print("First modifiy the json to append")
-        print("Add a string key of index")
-        integerkeys = list(map( lambda x: int(x),  ledgerdata.keys()))
-        print(integerkeys)
-        highestkey = sorted(integerkeys,reverse=True)[0]
-
-        # New Key is + 1
-        newkey = int(highestkey) + 1
-        print(highestkey)
-        print(newkey)
-
         # Write transaction at new key
-        ledgerdata[str(newkey)] = transaction 
+        ledgerdata.append(transaction )
 
         # Save
-        with open(targetledgerpath, 'w') as f:
+        with open(targetfilepath, 'w') as f:
             print("opened f")
             f.write(json.dumps(ledgerdata,    sort_keys=True, indent=4))
 
-    except e:
-        print(e)
+    except:
+        print("FAIL?")
 
 
-@app.post("/add/{rest_of_path:path}")
-async def _addtransactiontoledger(request: Request, rest_of_path: str):
+@app.post("/add")
+async def _note(request: Request):
     requestjson  = await request.json()
     print(requestjson)
-    print(rest_of_path)
 
-    addtransactiontoledger(requestjson, rest_of_path)
+    addnote(requestjson, "notes.json" )
 
     myjson = json.loads("\"OK\"")
     return JSONResponse(content=myjson, status_code=200)

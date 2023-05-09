@@ -1,14 +1,14 @@
 <script setup>
 import {ref} from "vue"
 const newnote = ref("nonote")
-const url = "localhost:16000"
+const url = "http://localhost:16001/add"
 
 const savebuttonclicked = (s) => {
     alert("bah" + JSON.stringify(newnote.value))
     fetch(url, {
         method:"POST",
-        body:newnote.value,
-    }).then(s => s.text()).then(s => alert(s)).catch(e=>alert('fail fetch'))
+        body:JSON.stringify({note: newnote.value}),
+    }).then(s => alert(s)).catch(e=>alert('fail fetch' + e))
 }
 </script>
 
