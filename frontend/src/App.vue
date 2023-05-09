@@ -25,7 +25,10 @@ export default {
 
 <template>
     <div>
-        <h1> BLAH </h1>
+        <h1> Note Taker </h1>
+        <AddNewNote />
+        <div class="m-4"></div>
+        <ShowNotes />
     </div>
 </template>
 

@@ -1,0 +1,12 @@
+version: "2.0"
+services:
+
+  notetaker:
+    container_name: "notetaker"
+    image: node:latest
+    command: "/app/runincontainer.sh"
+    working_dir: /app
+    ports:
+      - "16000:5173"
+    volumes:
+      - "./frontend:/app"
