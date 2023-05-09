@@ -134,7 +134,7 @@ export default {
 </script>
 
 
-<template lang="htmldsl">
+<template >
 <div class="flex flex-col">
     <div class="flex flex-row justify-between h-96 border-4 border-black">
         <InputWidget v-model="userinputtext" :initialValue="userinputtext"/>
