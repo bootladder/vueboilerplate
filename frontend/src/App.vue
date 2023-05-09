@@ -134,24 +134,24 @@ export default {
 </script>
 
 
-<template>
+<template lang="htmldsl">
 <div class="flex flex-col">
-    <div class="flex flex-row h-96 border-4 border-black">
+    <div class="flex flex-row justify-between h-96 border-4 border-black">
         <InputWidget v-model="userinputtext" :initialValue="userinputtext"/>
-        <InputWidget v-model="tagTableText" :initialValue="tagTableText"/>
-    </div>
-    <div class="flex flex-row h-96 w-96 p-4 border-black border-4">
         <div v-html="outputhtmlstring"></div>
-        <div @click="loadoutputhtml" ref="outputref">load</div>
+        <div @click="loadoutputhtml" ref="outputref"></div>
+        <pre class="p-1 m-1 bg-gray-100 text-xs">{{outputarray}}</pre>
+    </div>
+    <div class="flex flex-row h-96 p-4 border-black border-4">
+        <InputWidget v-model="tagTableText" :initialValue="tagTableText"/>
+        <pre class="p-1 m-1 bg-gray-100 text-xs">{{positiondata.map(s => s.toString().padStart(8,"0")) }}</pre>
+        <pre class="p-1 m-1 bg-gray-100 text-xs">{{siblingdata}}</pre>
+        <div class="p-1 m-1 bg-gray-100 text-xs flex flex-col w-48 "> <div v-for="(v,k) in siblingdict"      >{{v}}</div>    </div>
+        <div class="p-1 m-1 bg-gray-100 text-xs flex flex-col w-48 "> <div v-for="(v,k) in siblingdictplusclosing"      >{{v}}</div>    </div>
+        <div class="p-1 m-1 bg-gray-100 text-xs flex flex-col w-48 "> <div v-for="(v,k) in siblingdictplusclosingsorted">{{v}}</div>    </div>
     </div>
     <div class="flex flex-row">
         <InputWidget v-model="userinputtext" :initialValue="1+1"/>
-        <pre class="p-1 m-1 bg-gray-100 text-xs">{{positiondata.map(s => s.toString().padStart(8,"0")) }}</pre>
-        <pre class="p-1 m-1 bg-gray-100 text-xs">{{siblingdata}}</pre>
-        <pre class="p-1 m-1 bg-gray-100 text-xs">{{siblingdict}}</pre>
-        <pre class="p-1 m-1 bg-gray-100 text-xs">{{siblingdictplusclosing}}</pre>
-        <pre class="p-1 m-1 bg-gray-100 text-xs">{{siblingdictplusclosingsorted}}</pre>
-        <pre class="p-1 m-1 bg-gray-100 text-xs">{{outputarray}}</pre>
     </div>
     <div class="flex flex-row">
         <InputWidget v-model="userinputtext" :initialValue="1+1"/>
