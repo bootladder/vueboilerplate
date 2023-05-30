@@ -8,6 +8,7 @@ import ColorDivView from './ColorDivView.vue'
 import UpDownSequence from './UpDownSequence.vue'
 import InputWidget from './InputWidget.vue'
 import IndentParserView from './IndentParserView.vue'
+import OtherApp from './OtherApp.vue'
 console.log("DONE INPOUTWIDG")
 
 console.log(InputWidget)
