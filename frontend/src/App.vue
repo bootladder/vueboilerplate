@@ -5,9 +5,9 @@ const dashes="-----------------------------------------------------"
 const initTagTable = {
     'd': '<div>',
     '/d': '</div>',
-    'dr': '<div class="flex flex-row">',
+    'dr': '<div class="text-lg" style="display:flex; flex-direction:row; background-color: red">',
     '/dr': '</div>',
-    'dc': '<div class="flex flex-col">',
+    'dc': '<div style="display:flex; flex-direction:column; background-color: blue">',
     '/dc': '</div>',
     't': 'hello',
     '/t': '',
@@ -18,7 +18,7 @@ export default {
 	setup () {
 		return {
             blah: ref('hello world'),
-            userinputtext: ref("dc\n d\n t\nd"),
+            userinputtext: ref("dc\n-d\n-t\nd"),
             tagTableText: ref(JSON.stringify(initTagTable,null,2) ),
             outputref: ref(null),
 		}
@@ -31,21 +31,30 @@ export default {
         loadoutputhtml:function(){
             this.$refs.outputref.innerHTML = this.outputhtmlstring
         },
+        enterpressed: function(){
+            const temp = this.userinputtext.replace(/" "/g,"-")
+            this.userinputtext = this.userinputtext.replace(/ /g,"-")
+        },
      },
     computed: { 
         tagTable: function(){
             return JSON.parse(this.tagTableText)
         },
         indentdata: function(){
-            const poop = (this.userinputtext.split('\n').map((line) => {
+            const poop = (this.userinputtext.split('\n').map((rawline) => {
+                        cl(rawline)
+                        const line = rawline.replace(/-/g," ")
+                        cl(line)
                         const indent = line.length - line.trimLeft().length
+                        cl(indent)
                         return [indent,line.trimLeft()]
                     }))
             cl(poop)
             return poop
         },
         positiondata: function(){
-            return this.userinputtext.split('\n').map( (line) => {
+            return this.userinputtext.split('\n').map( (rawline) => {
+                const line = rawline.replace(/-/g," ")
                 const indent = line.length - line.trimLeft().length
                 const NUMDIGITS = 8
                 return Math.pow(10,NUMDIGITS - indent - 1)
@@ -54,7 +63,8 @@ export default {
         siblingdata: function(){
             const NUMDIGITS = 8
             var acc = 0
-            return this.userinputtext.split('\n').map( (line) => {
+            return this.userinputtext.split('\n').map( (rawline) => {
+                const line = rawline.replace(/-/g," ")
                 const indent = line.length - line.trimLeft().length
                 acc =  acc+Math.pow(10,NUMDIGITS - indent - 1)
                 return acc
@@ -63,7 +73,8 @@ export default {
         siblingdict: function(){
             const NUMDIGITS = 8
             var acc = 0
-            return this.userinputtext.split('\n').map( (line) => {
+            return this.userinputtext.split('\n').map( (rawline) => {
+                const line = rawline.replace(/-/g," ")
                 const indent = line.length - line.trimLeft().length
                 acc =  acc+Math.pow(10,NUMDIGITS - indent - 1)
                 return [acc, indent, line.trimLeft()]
@@ -136,9 +147,9 @@ export default {
 
 <template >
 <div class="flex flex-col">
+    <div v-html="outputhtmlstring"></div>
     <div class="flex flex-row justify-between h-96 border-4 border-black">
-        <InputWidget v-model="userinputtext" :initialValue="userinputtext"/>
-        <div v-html="outputhtmlstring"></div>
+        <InputWidget v-model="userinputtext" :initialValue="userinputtext" @enterpressed="enterpressed"/>
         <div @click="loadoutputhtml" ref="outputref"></div>
         <pre class="p-1 m-1 bg-gray-100 text-xs">{{outputarray}}</pre>
     </div>
